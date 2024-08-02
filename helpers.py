@@ -123,3 +123,26 @@ def get_and_format_top_n_rows(table_names=None, n=5):
         formatted_output += "\n"
     
     return formatted_output.strip()
+
+def run_query(query):
+    """
+    Executes the given SQL query on the tpch.db database.
+    
+    Args:
+        query (str): The SQL query to execute.
+    
+    Returns:
+        list: A list of rows (tuples) returned by the query.
+    """
+    try:
+        conn = sqlite3.connect('tpch.db')
+        cursor = conn.cursor()
+        
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        
+        conn.close()
+        return rows
+    except Exception as e:
+        print(f"An error occurred while executing the query: {e}")
+        return []
