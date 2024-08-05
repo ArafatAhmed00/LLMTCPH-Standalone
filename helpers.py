@@ -1,6 +1,8 @@
+import csv
 import json
 import sqlite3
 import timeit
+from decimal import Decimal
 
 def get_table_names():
     """
@@ -151,27 +153,74 @@ def create_prompt_question(question_num: int) -> str:
     
     return f"{question}\n\nExpected columns: {expected_columns}"
 
-def run_query(query: str, question_num: int) -> tuple[list[any], float]:
+def run_query(query: str, question_num: int) -> tuple[list[list[any]], float]:
     """
     Executes the given SQL query on the tpch.db database and tracks execution time.
     
     Args:
         query (str): The SQL query to execute.
+        question_num (int): The question number (unused in this function, but kept for consistency).
     
     Returns:
-        tuple: A tuple containing a list of all returned values and the execution time in seconds.
+        tuple: A tuple containing a list of rows (each row is a list) and the execution time in seconds.
     """
     start_time = timeit.default_timer()
+
+    conn = sqlite3.connect('tpch.db')
+    cursor = conn.cursor()
+    
+    cursor.execute(query)
+    results = cursor.fetchall()  # This will return a list of tuples
+    
+    conn.close()
+    execution_time = timeit.default_timer() - start_time
+
+    return [list(row) for row in results], execution_time
+
+def preprocess_value(value: str) -> str | Decimal:
+    """Preprocess a value by removing quotes and converting to Decimal if possible."""
+    value = value.strip().strip('"\'')
     try:
-        conn = sqlite3.connect('tpch.db')
-        cursor = conn.cursor()
-        
-        cursor.execute(query)
-        results = [item for sublist in cursor.fetchall() for item in sublist]
-        
-        conn.close()
-        execution_time = timeit.default_timer() - start_time
-        return results, execution_time
-    except Exception as e:
-        print(f"An error occurred while executing the query: {e}")
-        return [], 0.0
+        return Decimal(value)
+    except:
+        return value
+
+def fuzzy_match(a: str | Decimal, b: str | Decimal, tolerance: Decimal = Decimal('0.01')) -> bool:
+    """Perform a fuzzy match between two values."""
+    if isinstance(a, Decimal) and isinstance(b, Decimal):
+        return abs(a - b) <= tolerance
+    elif isinstance(a, str) and isinstance(b, str):
+        return a.strip().lower() == b.strip().lower()
+    else:
+        return str(a).strip() == str(b).strip()
+
+def validate_answer(question_num: int, answer: list[list[str | int | float]]) -> bool:
+    """
+    Validates the given answer against the expected results for a specific question.
+    
+    Args:
+        question_num (int): The question number.
+        answer (list): The answer to validate.
+    
+    Returns:
+        bool: True if the answer matches the expected results, False otherwise.
+    """
+    ans_file_path = f'expected_results/{question_num:02d}.ans'
+    
+    with open(ans_file_path, 'r') as f:
+        csv_reader = csv.reader(f)
+        next(csv_reader)  # Skip header
+        expected_results = [list(map(preprocess_value, row)) for row in csv_reader]
+    
+    if len(answer) != len(expected_results):
+        return False
+    
+    for i, (actual_row, expected_row) in enumerate(zip(answer, expected_results)):
+        if len(actual_row) != len(expected_row):
+            return False
+        for j, (actual, expected) in enumerate(zip(actual_row, expected_row)):
+            actual_decimal = Decimal(str(actual)) if isinstance(actual, (int, float)) else preprocess_value(str(actual))
+            if not fuzzy_match(actual_decimal, expected):
+                return False
+    
+    return True
