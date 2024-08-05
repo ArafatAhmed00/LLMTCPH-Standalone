@@ -1,0 +1,19 @@
+{
+    "models": [
+        "anthropic/claude-3.5-sonnet",
+        "deepseek/deepseek-coder",
+        "google/gemini-pro-1.5-exp",
+        "meta-llama/llama-2-70b-chat",
+        "meta-llama/llama-3.1-8b-instruct",
+        "meta-llama/llama-3.1-70b-instruct",
+        "meta-llama/llama-3.1-405b",
+        "meta-llama/llama-3.1-405b-instruct",
+        "mistralai/mistral-7b-instruct-v0.3",
+        "mistralai/mistral-large",
+        "openai/gpt-3.5-turbo-instruct",
+        "openai/gpt-4",
+        "openai/gpt-4o-2024-05-13",
+        "openai/gpt-4o-mini-2024-07-18",
+        "openai/gpt-4-turbo"
+    ]
+}
