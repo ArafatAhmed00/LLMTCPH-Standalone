@@ -1,0 +1,3 @@
+Optimize the given correct SQLite query for the given problem to achieve the fastest possible execution time while maintaining the same output.
+
+Put your final answer in <query> tags. Include only the SQL query in your final answer. Do not include any explanations, comments, or additional information. Your answer must start with "<query>" and end with "</query>". Anything outside these tags will be ignored and may cause execution errors. Your response ALWAYS ends with "</query>".
