@@ -163,16 +163,27 @@ def run_query(query: str, question_num: int) -> tuple[list[list[any]], float]:
     
     Returns:
         tuple: A tuple containing a list of rows (each row is a list) and the execution time in seconds.
+    
+    Raises:
+        sqlite3.OperationalError: If the query execution times out after 60 seconds.
     """
     start_time = timeit.default_timer()
 
     conn = sqlite3.connect('tpch.db')
+    conn.execute("PRAGMA timeout = 60000")  # Set timeout to 60 seconds (60000 milliseconds)
     cursor = conn.cursor()
     
-    cursor.execute(query)
-    results = cursor.fetchall()  # This will return a list of tuples
+    try:
+        cursor.execute(query)
+        results = cursor.fetchall()  # This will return a list of tuples
+    except sqlite3.OperationalError as e:
+        if "interrupted" in str(e).lower():
+            raise sqlite3.OperationalError("Query execution timed out after 60 seconds")
+        else:
+            raise
+    finally:
+        conn.close()
     
-    conn.close()
     execution_time = timeit.default_timer() - start_time
 
     return [list(row) for row in results], execution_time

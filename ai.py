@@ -1,3 +1,8 @@
+import os
+import requests
+
+from dotenv import load_dotenv
+
 class AI:
     def __init__(self) -> None:
 
