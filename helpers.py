@@ -1,4 +1,5 @@
 import sqlite3
+import timeit
 
 def get_table_names():
     """
@@ -29,10 +30,10 @@ def get_table_names():
 
 def get_database_schema():
     """
-    Retrieves the complete schema of the tpch.db database, including all tables, their columns, and column types.
+    Retrieves the CREATE statements for all tables in the tpch.db database.
     
     Returns:
-        str: A formatted string representation of the database schema.
+        str: A formatted string representation of the CREATE statements for each table.
     """
     try:
         conn = sqlite3.connect('tpch.db')
@@ -43,14 +44,11 @@ def get_database_schema():
         
         formatted_schema = ""
         for table in tables:
-            cursor.execute(f"PRAGMA table_info({table});")
-            all_columns = cursor.fetchall()
-            
-            formatted_schema += f"Table: {table}\n"
-            formatted_schema += "Columns:\n"
-            for column in all_columns:
-                formatted_schema += f"  - {column[1]} ({column[2]})\n"
-            formatted_schema += "\n"
+            cursor.execute(f"SELECT sql FROM sqlite_master WHERE type='table' AND name='{table}';")
+            create_statement = cursor.fetchone()
+            if create_statement:
+                formatted_schema += f"Table: {table}\n"
+                formatted_schema += f"CREATE STATEMENT: {create_statement[0]}\n\n"
         
         conn.close()
         return formatted_schema.strip()
@@ -126,14 +124,15 @@ def get_and_format_top_n_rows(table_names=None, n=5):
 
 def run_query(query):
     """
-    Executes the given SQL query on the tpch.db database.
+    Executes the given SQL query on the tpch.db database and tracks execution time.
     
     Args:
         query (str): The SQL query to execute.
     
     Returns:
-        list: A list of rows (tuples) returned by the query.
+        tuple: A tuple containing a list of rows (tuples) returned by the query and the execution time in seconds.
     """
+    start_time = timeit.default_timer()
     try:
         conn = sqlite3.connect('tpch.db')
         cursor = conn.cursor()
@@ -142,7 +141,8 @@ def run_query(query):
         rows = cursor.fetchall()
         
         conn.close()
-        return rows
+        execution_time = timeit.default_timer() - start_time
+        return rows, execution_time
     except Exception as e:
         print(f"An error occurred while executing the query: {e}")
-        return []
+        return [], 0.0
