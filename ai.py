@@ -54,7 +54,8 @@ class AI:
             headers={
                 "Authorization": f"Bearer {self.OPENROUTER_API_KEY}",
             },
-            json=params
+            json=params,
+            timeout=120
         )
 
         response.raise_for_status()  # This will raise an HTTPError for bad responses

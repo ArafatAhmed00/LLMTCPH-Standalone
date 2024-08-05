@@ -4,6 +4,9 @@ import sqlite3
 import timeit
 from decimal import Decimal
 
+import multiprocessing
+import signal
+
 def get_table_names():
     """
     Opens the tpch.db database and returns all table names.
@@ -153,40 +156,41 @@ def create_prompt_question(question_num: int) -> str:
     
     return f"{question}\n\nExpected columns: {expected_columns}"
 
-def run_query(query: str, question_num: int) -> tuple[list[list[any]], float]:
-    """
-    Executes the given SQL query on the tpch.db database and tracks execution time.
-    
-    Args:
-        query (str): The SQL query to execute.
-        question_num (int): The question number (unused in this function, but kept for consistency).
-    
-    Returns:
-        tuple: A tuple containing a list of rows (each row is a list) and the execution time in seconds.
-    
-    Raises:
-        sqlite3.OperationalError: If the query execution times out after 60 seconds.
-    """
-    start_time = timeit.default_timer()
-
-    conn = sqlite3.connect('tpch.db')
-    conn.execute("PRAGMA timeout = 60000")  # Set timeout to 60 seconds (60000 milliseconds)
+def execute_query(query, result_queue):
+    conn = sqlite3.connect('tpch.db', timeout=60)  # Set SQLite timeout
     cursor = conn.cursor()
-    
     try:
         cursor.execute(query)
-        results = cursor.fetchall()  # This will return a list of tuples
+        result_queue.put([list(row) for row in cursor.fetchall()])
     except sqlite3.OperationalError as e:
-        if "interrupted" in str(e).lower():
-            raise sqlite3.OperationalError("Query execution timed out after 60 seconds")
-        else:
-            raise
+        result_queue.put(e)
     finally:
+        cursor.close()
         conn.close()
+
+def run_query(query: str, question_num: int) -> tuple[list[list[any]], float]:
+    start_time = timeit.default_timer()
+    result_queue = multiprocessing.Queue()
     
+    process = multiprocessing.Process(target=execute_query, args=(query, result_queue))
+    process.start()
+    process.join(60)  # Wait for 60 seconds
+
+    if process.is_alive():
+        process.terminate()
+        process.join()
+        raise TimeoutError("Query execution timed out after 60 seconds")
+
     execution_time = timeit.default_timer() - start_time
 
-    return [list(row) for row in results], execution_time
+    if result_queue.empty():
+        raise Exception("No result or error returned from query execution")
+
+    result = result_queue.get()
+    if isinstance(result, Exception):
+        raise result
+
+    return result, execution_time
 
 def preprocess_value(value: str) -> str | Decimal:
     """Preprocess a value by removing quotes and converting to Decimal if possible."""

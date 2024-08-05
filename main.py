@@ -82,7 +82,7 @@ def main() -> None:
     """Run the main program."""
     create_results_db()
     
-    for question_num in range(1, 23):
+    for question_num in range(17, 23):
         print(f"\nRunning query for question {question_num}:")
         
         with open(f'benchmark_queries/{question_num:02d}.sql', 'r') as f:
@@ -141,3 +141,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+# TODO: Delete Llama 405b (non-instruct)
