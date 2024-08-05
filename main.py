@@ -90,101 +90,54 @@ def main() -> None:
         
         ai = AI()
         
-        for model in get_models()[:1]:
+        for model in get_models():
             print(f"Running query for model: {model}")
             
             for system_prompt, user_prompt in generate_prompts(question_num):
+                response = ""
+                extracted_sql = ""
+                execution_time = -1
+                validated = False
+                result = None
+
                 try:
                     messages = [
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt}
                     ]
                     response = ai.generate(messages, model)
+                except Exception as e:
+                    print(f"Error generating response: {str(e)}")
+                    response = str(e)
+                    store_results(question_num, execution_time, validated, 
+                                  model, system_prompt, response, extracted_sql)
+                    continue
+
+                try:
                     extracted_sql = extract_query_from_response(response)
-                    
+                except Exception as e:
+                    print(f"Error extracting SQL: {str(e)}")
+                    store_results(question_num, execution_time, validated, 
+                                  model, system_prompt, response, extracted_sql)
+                    continue
+
+                try:
                     result, execution_time = run_query(extracted_sql, question_num)
-                    
                     print(f"Execution time: {execution_time:.4f} seconds")
-                    
+                except Exception as e:
+                    print(f"Error running query: {str(e)}")
+                    store_results(question_num, execution_time, validated, 
+                                  model, system_prompt, response, extracted_sql)
+                    continue
+
+                try:
                     validated = validate_answer(question_num, result)
                     print(f"Answer is valid: {validated}")
-                
                 except Exception as e:
-                    print(f"Error occurred: {str(e)}")
-                    execution_time = -1  # Use -1 to indicate error in execution time
-                    validated = False
-                    response = str(e)
-                    extracted_sql = ""
-                
+                    print(f"Error validating answer: {str(e)}")
+
                 store_results(question_num, execution_time, validated, 
-                              model, system_prompt, 
-                              response, extracted_sql)
+                              model, system_prompt, response, extracted_sql)
 
 if __name__ == "__main__":
     main()
-
-    exit()
-    raise(ValueError("Stop here for now"))
-
-    query1 = """select
-    l_returnflag,
-    l_linestatus,
-    sum(l_quantity) as sum_qty,
-    sum(l_extendedprice) as sum_base_price,
-    sum(l_extendedprice * (1 - l_discount)) as sum_disc_price,
-    sum(l_extendedprice * (1 - l_discount) * (1 + l_tax)) as sum_charge,
-    avg(l_quantity) as avg_qty,
-    avg(l_extendedprice) as avg_price,
-    avg(l_discount) as avg_disc,
-    count(*) as count_order
-from
-    lineitem
-where
-    l_shipdate <= date('1998-12-01', '-90 days')
-group by
-    l_returnflag,
-    l_linestatus
-order by
-    l_returnflag,
-    l_linestatus;"""
-
-    query2 = """SELECT
-    L_RETURNFLAG,
-    L_LINESTATUS,
-    SUM(L_QUANTITY) AS sum_qty,
-    SUM(L_EXTENDEDPRICE) AS sum_base_price,
-    SUM(L_EXTENDEDPRICE * (1 - CAST(L_DISCOUNT AS REAL) / 100.0)) AS sum_disc_price,
-    SUM(L_EXTENDEDPRICE * (1 - CAST(L_DISCOUNT AS REAL) / 100.0) * (1 + CAST(L_TAX AS REAL) / 100.0)) AS sum_charge,
-    AVG(CAST(L_QUANTITY AS REAL)) AS avg_qty,
-    AVG(CAST(L_EXTENDEDPRICE AS REAL)) AS avg_price,
-    AVG(CAST(L_DISCOUNT AS REAL)) AS avg_disc,
-    COUNT(*) AS count_order
-FROM
-    LINEITEM
-WHERE
-    L_SHIPDATE <= '1998-09-02'
-GROUP BY
-    L_RETURNFLAG,
-    L_LINESTATUS
-ORDER BY
-    L_RETURNFLAG,
-    L_LINESTATUS;
-    """
-
-    # Run query 1
-    results1, execution_time1 = run_query(query1, 1)
-    print("Results for query 1:")
-    print(results1)
-    validated1 = validate_answer(1, results1)
-    print(f"Execution time for query 1: {execution_time1:.4f} seconds")
-    print(f"Answer for query 1 is valid: {validated1}")
-
-    print("\n" + "="*50 + "\n")
-
-    # Run query 2
-    results2, execution_time2 = run_query(query2, 1)
-    print("Results for query 2:")
-    print(results2)
-    validated2 = validate_answer(1, results2)
-    print(f"Execution time for query 2: {execution_time2:.4f} seconds")
-    print(f"Answer for query 2 is valid: {validated2}")
