@@ -1,157 +1,24 @@
 {
-	"1": {
-		"natural_language_query": "What is the pricing summary report for all lineitems shipped as of 1998-09-02?",
-		"correct_answer": {
-			"order_count": 5916591,
-			"avg_quantity": 25.52,
-			"avg_extended_price": 38273.13,
-			"avg_discount": 0.05
-		}
-	},
-	"2": {
-		"natural_language_query": "What is the minimum cost supplier for parts of size 15 in the EUROPE region?",
-		"correct_answer": {
-			"supplier_id": "Supplier#000000647",
-			"nation": "UNITED KINGDOM",
-			"cost": 1015.45
-		}
-	},
-	"3": {
-		"natural_language_query": "What is the top unshipped order with the highest value for the market segment 'BUILDING' as of 1995-03-15?",
-		"correct_answer": {
-			"order_key": 2456423,
-			"revenue": 406181.01,
-			"order_date": "1995-03-05"
-		}
-	},
-	"4": {
-		"natural_language_query": "How many orders were ordered in Q3 1993 where at least one lineitem was received by the customer later than its committed date?",
-		"correct_answer": {
-			"late_order_count": 10594
-		}
-	},
-	"5": {
-		"natural_language_query": "What is the revenue volume done through local suppliers in the ASIA region in the year 1994?",
-		"correct_answer": {
-			"nation": "INDONESIA",
-			"revenue": 55502041.17
-		}
-	},
-	"6": {
-		"natural_language_query": "What would be the revenue increase if discounts between 0.06 and 0.07 were eliminated for quantities less than 24 shipped in 1994?",
-		"correct_answer": {
-			"potential_revenue_increase": 123141078.23
-		}
-	},
-	"7": {
-		"natural_language_query": "What was the value of goods shipped between FRANCE and GERMANY in 1995?",
-		"correct_answer": {
-			"shipping_value": 54639732.73
-		}
-	},
-	"8": {
-		"natural_language_query": "What was the market share of BRAZIL in AMERICA for ECONOMY ANODIZED STEEL parts in 1995 and 1996?",
-		"correct_answer": {
-			"market_share_1995": 0.05,
-			"market_share_1996": 0.06
-		}
-	},
-	"9": {
-		"natural_language_query": "What was the highest yearly profit for parts containing the word 'green'?",
-		"correct_answer": {
-			"nation": "ALGERIA",
-			"year": 1998,
-			"profit": 31342867.24
-		}
-	},
-	"10": {
-		"natural_language_query": "Who is the top customer in terms of lost revenue for Q4 1993?",
-		"correct_answer": {
-			"customer_id": "Customer#000057040",
-			"lost_revenue": 734235.24,
-			"account_balance": 632.87
-		}
-	},
-	"11": {
-		"natural_language_query": "What is the most valuable part (in terms of inventory) in GERMANY?",
-		"correct_answer": {
-			"part_key": 129760,
-			"value": 17538456.86
-		}
-	},
-	"12": {
-		"natural_language_query": "How many high and low priority orders were shipped late by MAIL and SHIP modes in 1994?",
-		"correct_answer": {
-			"high_priority_late_count": 6202,
-			"low_priority_late_count": 9324
-		}
-	},
-	"13": {
-		"natural_language_query": "What is the distribution of customers by the number of orders they have?",
-		"correct_answer": {
-			"most_common_order_count": 11,
-			"customer_count": 50005
-		}
-	},
-	"14": {
-		"natural_language_query": "What percentage of revenue in September 1995 was derived from promotional parts?",
-		"correct_answer": {
-			"promo_revenue_percentage": 16.38
-		}
-	},
-	"15": {
-		"natural_language_query": "Who is the top supplier in terms of revenue for Q1 1996?",
-		"correct_answer": {
-			"supplier_id": "Supplier#000008449",
-			"total_revenue": 1772627.21
-		}
-	},
-	"16": {
-		"natural_language_query": "How many suppliers can supply MEDIUM BRUSHED TIN parts of size 3?",
-		"correct_answer": {
-			"supplier_count": 28
-		}
-	},
-	"17": {
-		"natural_language_query": "What would be the average yearly gross loss in revenue if orders for quantities less than 20% of the average quantity of Brand#23 MED BOX parts were no longer filled?",
-		"correct_answer": {
-			"avg_yearly_loss": 348406.05
-		}
-	},
-	"18": {
-		"natural_language_query": "Who is the top customer who has made a large quantity order (quantity > 300)?",
-		"correct_answer": {
-			"customer_id": "Customer#000128120",
-			"order_key": 4722021,
-			"order_date": "1994-04-07",
-			"total_price": 544089.09,
-			"quantity": 323
-		}
-	},
-	"19": {
-		"natural_language_query": "What is the discounted revenue of certain types of parts shipped by air and delivered in person?",
-		"correct_answer": {
-			"discounted_revenue": 3083843.05
-		}
-	},
-	"20": {
-		"natural_language_query": "Which supplier in CANADA has an excess of forest colored parts available?",
-		"correct_answer": {
-			"supplier_id": "Supplier#000000020"
-		}
-	},
-	"21": {
-		"natural_language_query": "Which supplier from SAUDI ARABIA failed to meet the committed delivery date in orders where they were the only supplier who failed?",
-		"correct_answer": {
-			"supplier_id": "Supplier#000002829",
-			"fail_count": 20
-		}
-	},
-	"22": {
-		"natural_language_query": "For country code 13, how many customers haven't placed orders in 7 years and what's their total account balance?",
-		"correct_answer": {
-			"customer_count": 888,
-			"total_acct_balance": 6737713.99
-		}
-	}
+	"1": "What is the pricing summary report for all lineitems shipped as of 1998-09-02?",
+	"2": "What is the minimum cost supplier for parts of size 15 in the EUROPE region?",
+	"3": "What is the top unshipped order with the highest value for the market segment 'BUILDING' as of 1995-03-15?",
+	"4": "How many orders were ordered in Q3 1993 where at least one lineitem was received by the customer later than its committed date?",
+	"5": "What is the revenue volume done through local suppliers in the ASIA region in the year 1994?",
+	"6": "What would be the revenue increase if discounts between 0.06 and 0.07 were eliminated for quantities less than 24 shipped in 1994?",
+	"7": "What was the value of goods shipped between FRANCE and GERMANY in 1995?",
+	"8": "What was the market share of BRAZIL in AMERICA for ECONOMY ANODIZED STEEL parts in 1995 and 1996?",
+	"9": "What was the highest yearly profit for parts containing the word 'green'?",
+	"10": "Who is the top customer in terms of lost revenue for Q4 1993?",
+	"11": "What is the most valuable part (in terms of inventory) in GERMANY?",
+	"12": "How many high and low priority orders were shipped late by MAIL and SHIP modes in 1994?",
+	"13": "What is the distribution of customers by the number of orders they have?",
+	"14": "What percentage of revenue in September 1995 was derived from promotional parts?",
+	"15": "Who is the top supplier in terms of revenue for Q1 1996?",
+	"16": "How many suppliers can supply MEDIUM BRUSHED TIN parts of size 3?",
+	"17": "What would be the average yearly gross loss in revenue if orders for quantities less than 20% of the average quantity of Brand#23 MED BOX parts were no longer filled?",
+	"18": "Who is the top customer who has made a large quantity order (quantity > 300)?",
+	"19": "What is the discounted revenue of certain types of parts shipped by air and delivered in person?",
+	"20": "Which supplier in CANADA has an excess of forest colored parts available?",
+	"21": "Which supplier from SAUDI ARABIA failed to meet the committed delivery date in orders where they were the only supplier who failed?",
+	"22": "For country code 13, how many customers haven't placed orders in 7 years and what's their total account balance?"
 }

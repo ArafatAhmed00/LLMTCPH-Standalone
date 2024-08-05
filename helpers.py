@@ -1,3 +1,4 @@
+import json
 import sqlite3
 import timeit
 
@@ -122,7 +123,35 @@ def get_and_format_top_n_rows(table_names=None, n=5):
     
     return formatted_output.strip()
 
-def run_query(query):
+def create_prompt_question(question_num: int) -> str:
+    """
+    Creates a formatted prompt question based on the question number.
+    
+    Args:
+        question_num (int): The question number.
+    
+    Returns:
+        str: The formatted prompt question.
+    
+    Raises:
+        ValueError: If the question number is not found.
+    """
+    # Data retrieved from https://github.com/eyalroz/tpch-tools
+    with open('tpch_questions.json', 'r') as f:
+        questions = json.load(f)
+    
+    question = questions.get(str(question_num))
+    if question is None:
+        raise ValueError(f"Question number {question_num} not found.")
+    
+    # Get expected columns from the .ans file
+    ans_file_path = f'expected_results/{question_num:02d}.ans'
+    with open(ans_file_path, 'r') as f:
+        expected_columns = f.readline().strip()
+    
+    return f"{question}\n\nExpected columns: {expected_columns}"
+
+def run_query(query: str, question_num: int) -> tuple[list[any], float]:
     """
     Executes the given SQL query on the tpch.db database and tracks execution time.
     
@@ -130,7 +159,7 @@ def run_query(query):
         query (str): The SQL query to execute.
     
     Returns:
-        tuple: A tuple containing a list of rows (tuples) returned by the query and the execution time in seconds.
+        tuple: A tuple containing a list of all returned values and the execution time in seconds.
     """
     start_time = timeit.default_timer()
     try:
@@ -138,11 +167,11 @@ def run_query(query):
         cursor = conn.cursor()
         
         cursor.execute(query)
-        rows = cursor.fetchall()
+        results = [item for sublist in cursor.fetchall() for item in sublist]
         
         conn.close()
         execution_time = timeit.default_timer() - start_time
-        return rows, execution_time
+        return results, execution_time
     except Exception as e:
         print(f"An error occurred while executing the query: {e}")
         return [], 0.0
